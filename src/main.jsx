@@ -1,28 +1,26 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { supabase, configured } from './supabase';
 import './style.css';
 
 function App() {
   return (
-    <main style={{
+    <div style={{
       minHeight: '100vh',
       background: '#10100f',
-      color: '#f5f0e8',
-      padding: '40px 20px',
+      color: '#ffffff',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
       fontFamily: 'sans-serif',
-      textAlign: 'center'
+      textAlign: 'center',
+      padding: '24px'
     }}>
-      <h1 style={{fontSize: '42px'}}>unblinded</h1>
+      <h1 style={{fontSize: '48px'}}>unblinded</h1>
       <p>চিন্তার স্বাধীন মঞ্চ</p>
-      <p>ধর্ম, দর্শন, ইতিহাস ও মানবচিন্তার মুক্ত আলোচনা।</p>
-      <p style={{color: '#aaa', marginTop: '30px'}}>
-        {configured
-          ? 'সার্ভারের সাথে সংযোগ প্রস্তুত।'
-          : 'Supabase সংযোগের জন্য সেটিংস প্রয়োজন।'}
-      </p>
-    </main>
+      <p>ওয়েবসাইট সফলভাবে চালু হয়েছে।</p>
+    </div>
   );
 }
 
