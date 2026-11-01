@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {supabase,configured} from './supabase';
 import {BookOpen, Feather, Users, MessageCircle, Search, LogIn, LogOut, Shield, Send, Plus, X, Flag, Menu, Sparkles} from 'lucide-react';
 import './style.css';
+import WriteArticle from "./WriteArticle";
 
 const categories=['সব লেখা','ধর্ম ও বিশ্বাস','দর্শন','যুক্তিবিদ্যা','নৈতিকতা ও সমাজ','বিজ্ঞান ও চিন্তা','অন্যান্য'];
 const dateFmt=s=>new Date(s).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'});
@@ -44,6 +45,7 @@ function App(){
  const [session,setSession]=useState(null),[profile,setProfile]=useState(null),[articles,setArticles]=useState([]),[comments,setComments]=useState([]),[chat,setChat]=useState([]),[category,setCategory]=useState('সব লেখা'),[query,setQuery]=useState(''),[page,setPage]=useState('home'),[selected,setSelected]=useState(null),[notice,setNotice]=useState(''),[authMode,setAuthMode]=useState('login'),[busy,setBusy]=useState(false),[menu,setMenu]=useState(false),[admin,setAdmin]=useState(false);
  const [auth,setAuth]=useState({email:'',password:'',name:''}),[draft,setDraft]=useState({title:'',category:'দর্শন',excerpt:'',body:''}),[comment,setComment]=useState(''),[chatText,setChatText]=useState(''),[report,setReport]=useState('');
  const say=t=>{setNotice(t);setTimeout(()=>setNotice(''),3500)};
+ const [showWriter, setShowWriter] = useState(false);
  useEffect(()=>{if(!configured)return;supabase.auth.getSession().then(({data})=>setSession(data.session));const {data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>subscription.unsubscribe()},[]);
  useEffect(()=>{if(session)loadProfile();else{setProfile(null);setAdmin(false)}},[session]);
  useEffect(()=>{loadArticles()},[category,query]);
