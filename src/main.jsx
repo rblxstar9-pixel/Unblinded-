@@ -6,6 +6,40 @@ import './style.css';
 
 const categories=['সব লেখা','ধর্ম ও বিশ্বাস','দর্শন','যুক্তিবিদ্যা','নৈতিকতা ও সমাজ','বিজ্ঞান ও চিন্তা','অন্যান্য'];
 const dateFmt=s=>new Date(s).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'});
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error: error.message || String(error) };
+  }
+
+  componentDidCatch(error) {
+    console.error('UNBLINDED ERROR:', error);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{
+          background: '#10100f',
+          color: '#ff7777',
+          padding: '30px',
+          minHeight: '100vh',
+          overflowWrap: 'anywhere'
+        }}>
+          <h1>UNBLINDED ERROR</h1>
+          <pre>{this.state.error}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App(){
  const [session,setSession]=useState(null),[profile,setProfile]=useState(null),[articles,setArticles]=useState([]),[comments,setComments]=useState([]),[chat,setChat]=useState([]),[category,setCategory]=useState('সব লেখা'),[query,setQuery]=useState(''),[page,setPage]=useState('home'),[selected,setSelected]=useState(null),[notice,setNotice]=useState(''),[authMode,setAuthMode]=useState('login'),[busy,setBusy]=useState(false),[menu,setMenu]=useState(false),[admin,setAdmin]=useState(false);
  const [auth,setAuth]=useState({email:'',password:'',name:''}),[draft,setDraft]=useState({title:'',category:'দর্শন',excerpt:'',body:''}),[comment,setComment]=useState(''),[chatText,setChatText]=useState(''),[report,setReport]=useState('');
@@ -44,4 +78,37 @@ function App(){
  {page==='admin'&&<section className="section"><div className="eyebrow">সম্পাদকীয় নিয়ন্ত্রণ</div><h1>মডারেশন ড্যাশবোর্ড</h1><p className="muted">শুধু অনুমোদিত মডারেটর ও অ্যাডমিনরা এই অংশ ব্যবহার করতে পারবেন।</p>{pending.map(a=><div className="moderow" key={a.id}><div><b>{a.title}</b><p>{a.profiles?.display_name} · {a.category}</p><p>{a.body?.slice(0,220)}</p></div><div className="modactions"><button className="goldbtn" onClick={()=>moderate(a.id,'published')}>অনুমোদন</button><button className="outlinebtn" onClick={()=>moderate(a.id,'rejected')}>প্রত্যাখ্যান</button></div></div>)}{!pending.length&&<div className="empty">পর্যালোচনার জন্য কোনো লেখা নেই।</div>}<h2 style={{marginTop:40}}>পাঠকের রিপোর্ট</h2>{reports.map(r=><div className="moderow" key={r.id}><div><b>{r.target_type} · {r.reason}</b><p>{dateFmt(r.created_at)} · রিপোর্ট #{r.id.slice(0,8)}</p></div><div className="modactions"><button className="goldbtn" onClick={()=>resolveReport(r.id,'resolved')}>সমাধান</button><button className="outlinebtn" onClick={()=>resolveReport(r.id,'dismissed')}>বাতিল</button></div></div>)}{!reports.length&&<div className="empty">নতুন কোনো রিপোর্ট নেই।</div>}</section>}
  <footer><a className="brand">un<span>blinded</span>.</a><span>শ্রদ্ধা · যুক্তি · সহাবস্থান</span><span>© ২০২৬ আনব্লাইন্ডেড</span></footer></div>{notice&&<div className="toast">{notice}</div>}</div>
 }
-createRoot(document.getElementById('root')).render(<App/>);
+const rootElement = document.getElementById('root');
+
+function showRuntimeError(error) {
+  rootElement.innerHTML = '';
+
+  const box = document.createElement('div');
+  box.style.cssText =
+    'background:#10100f;color:#ff7777;padding:30px;min-height:100vh;font:16px sans-serif;overflow-wrap:anywhere';
+
+  const heading = document.createElement('h1');
+  heading.textContent = 'UNBLINDED RUNTIME ERROR';
+
+  const details = document.createElement('pre');
+  details.style.whiteSpace = 'pre-wrap';
+  details.textContent =
+    error?.stack || error?.message || String(error);
+
+  box.append(heading, details);
+  rootElement.appendChild(box);
+}
+
+window.addEventListener('error', (event) => {
+  showRuntimeError(event.error || event.message);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  showRuntimeError(event.reason);
+});
+
+createRoot(rootElement).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);
