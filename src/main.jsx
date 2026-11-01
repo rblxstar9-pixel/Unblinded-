@@ -454,4 +454,137 @@ export default function App() {
                 <button className="quiet" onClick={() => setReplyTo(comment.id)}>উত্তর দিন</button>
                 {isModerator && <button className="quiet" onClick={() => hideComment(comment.id)}>হাইড</button>}
                 {comments.filter(reply => reply.parent_id === comment.id && reply.status === 'visible').map(reply => <div key={reply.id} style={{ marginLeft: 25, padding: 12, borderLeft: '2px solid #6c5737' }}>
-                  <strong>{authors[reply.author_id]?.display_name |
+                                    <strong>
+                    {authors[reply.author_id]?.display_name || 'সদস্য'}
+                  </strong>
+                  <p>{reply.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+</main>
+}
+
+{page === 'auth' && (
+  <main className="container page">
+    <div className="panel">
+      <h1>{authMode === 'login' ? 'ফিরে আসুন।' : 'নতুন অ্যাকাউন্ট তৈরি করুন।'}</h1>
+      <form className="form" onSubmit={authenticate}>
+        {authMode === 'signup' && (
+          <input className="field" placeholder="আপনার নাম" value={displayName}
+            onChange={e => setDisplayName(e.target.value)} required />
+        )}
+        <input className="field" type="email" placeholder="ইমেইল"
+          value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
+        <input className="field" type="password" placeholder="পাসওয়ার্ড"
+          value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
+        <button className="btn" disabled={busy}>
+          {authMode === 'login' ? 'লগইন করুন' : 'সাইন আপ করুন'}
+        </button>
+      </form>
+      <button className="quiet" onClick={() =>
+        setAuthMode(authMode === 'login' ? 'signup' : 'login')}>
+        {authMode === 'login' ? 'নতুন অ্যাকাউন্ট তৈরি করুন' : 'লগইন করুন'}
+      </button>
+    </div>
+  </main>
+)}
+
+{page === 'write' && (
+  <main className="container page">
+    <h1>আপনার নিবন্ধ লিখুন</h1>
+    <form className="form panel" onSubmit={publishArticle}>
+      <input className="field" placeholder="শিরোনাম" value={draft.title}
+        onChange={e => setDraft({...draft, title:e.target.value})} required />
+      <select className="field" value={draft.category}
+        onChange={e => setDraft({...draft, category:e.target.value})}>
+        {CATEGORIES.filter(c => c !== 'সব').map(c => <option key={c}>{c}</option>)}
+      </select>
+      <textarea className="field" placeholder="সংক্ষিপ্ত পরিচিতি"
+        value={draft.excerpt}
+        onChange={e => setDraft({...draft, excerpt:e.target.value})} required />
+      <textarea className="field" placeholder="সম্পূর্ণ নিবন্ধ"
+        value={draft.body}
+        onChange={e => setDraft({...draft, body:e.target.value})} required />
+      <button className="btn" disabled={busy}>জমা দিন</button>
+    </form>
+  </main>
+)}
+
+{page === 'community' && (
+  <main className="container page">
+    <h1>সম্প্রদায়</h1>
+    <div className="panel">
+      {chat.map(item => (
+        <div className="comment" key={item.id}>
+          <strong>{authors[item.author_id]?.display_name || 'সদস্য'}</strong>
+          <p>{item.body}</p>
+        </div>
+      ))}
+      <form className="row" onSubmit={sendChat}>
+        <input className="field" value={chatText}
+          onChange={e => setChatText(e.target.value)} placeholder="বার্তা লিখুন..." />
+        <button className="btn">পাঠান</button>
+      </form>
+    </div>
+  </main>
+)}
+
+{page === 'account' && (
+  <main className="container page">
+    <h1>আমার অ্যাকাউন্ট</h1>
+    <div className="panel">
+      <h2>{profile?.display_name || session?.user?.email}</h2>
+      <p>{session?.user?.email}</p>
+      <p>আপনার লেখা: {myArticles.length}</p>
+      <button className="btn secondary" onClick={logout}>লগআউট</button>
+    </div>
+  </main>
+)}
+
+{page === 'editorial' && (
+  <main className="container page">
+    <h1>সম্পাদকীয় প্যানেল</h1>
+    {!isModerator ? <div className="notice">অনুমতি নেই।</div> : (
+      <>
+        <h2>অনুমোদনের অপেক্ষায় ({pending.length})</h2>
+        {pending.map(article => (
+          <div className="panel" key={article.id}>
+            <h3>{article.title}</h3>
+            <p>{article.excerpt}</p>
+            <button className="btn" onClick={() => approveArticle(article.id)}>
+              অনুমোদন ও প্রকাশ
+            </button>
+          </div>
+        ))}
+      </>
+    )}
+  </main>
+)}
+
+<footer className="footer">
+  <strong>UNBLINDED</strong>
+  <span>© {new Date().getFullYear()} UNBLINDED</span>
+</footer>
+</div>
+);
+}
+
+function ArticleCard({ article, author, onClick }) {
+  return (
+    <button className="article-card" onClick={onClick}
+      style={{textAlign:'left', color:'inherit'}}>
+      <div className="tag">{article.category}</div>
+      <h3>{article.title}</h3>
+      <p>{article.excerpt}</p>
+      <div className="card-foot">
+        <span>{author?.display_name || 'UNBLINDED লেখক'}</span>
+        <span>{new Date(article.created_at).toLocaleDateString('bn-BD')}</span>
+      </div>
+    </button>
+  );
+} |
