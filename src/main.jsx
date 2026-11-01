@@ -459,10 +459,10 @@ export default function App() {
                   </strong>
                   <p>{reply.body}</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        ))}
+        )}
       </div>
     </section>
   </div>
