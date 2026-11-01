@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import WriteArticle from './WriteArticle';
 import './style.css';
+import Messages from "./Messages";
 
 const categories = [
   'সব লেখা',
@@ -624,7 +625,9 @@ function App() {
             <div className="eyebrow">
               কমিউনিটিতে যোগ দিন
             </div>
-
+<a onClick={() => setPage('messages')}>
+  বার্তা
+</a>
             <h1>
               {authMode === 'login'
                 ? 'আবার স্বাগতম'
@@ -1066,7 +1069,14 @@ function App() {
             ))}
           </section>
         )}
-
+        
+{page === 'messages' && (
+  <Messages
+    supabase={supabase}
+    onClose={() => setPage('home')}
+  />
+)}
+        
         {/* ADMIN DASHBOARD */}
         {page === 'admin' && (
           <section className="section">
