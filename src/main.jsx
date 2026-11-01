@@ -3,7 +3,6 @@ import {createRoot} from 'react-dom/client';
 import {supabase,configured} from './supabase';
 import {BookOpen, Feather, Users, MessageCircle, Search, LogIn, LogOut, Shield, Send, Plus, X, Flag, Menu, Sparkles} from 'lucide-react';
 import './style.css';
-import { createRoot } from 'react-dom/client';
 
 const categories=['সব লেখা','ধর্ম ও বিশ্বাস','দর্শন','যুক্তিবিদ্যা','নৈতিকতা ও সমাজ','বিজ্ঞান ও চিন্তা','অন্যান্য'];
 const dateFmt=s=>new Date(s).toLocaleDateString('bn-BD',{year:'numeric',month:'short',day:'numeric'});
