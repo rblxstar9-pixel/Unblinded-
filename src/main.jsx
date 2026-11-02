@@ -10,6 +10,7 @@ import { supabase, configured } from "./supabase";
 import WriteArticle from "./WriteArticle";
 import Messages from "./Messages";
 import QuestionBank from "./QuestionBank";
+import SocialHub from "./SocialHub";
 import "./style.css";
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   ["learn", "Learn", BookOpen],
   ["question-bank", "Question Bank", BookOpen],
   ["community", "Community", Users],
+  ["social", "Social feed", MessageCircle],
   ["messages", "Messages", MessageCircle],
   ["planner", "Planner", CalendarDays],
   ["tools", "Study tools", Zap],
@@ -240,6 +242,7 @@ function App() {
         <div className="metric-grid"><div className="metric-card"><div className="metric-icon blue"><Target size={18}/></div><small>Tasks completed</small><strong>{doneCount}<span> / {tasks.length}</span></strong><div className="mini-progress"><i style={{width:`${progress}%`}}/></div><label>{progress}% of your task list</label></div><div className="metric-card"><div className="metric-icon violet"><BookOpen size={18}/></div><small>Learning resources</small><strong>{articles.length}</strong><label>Available to explore</label></div><div className="metric-card"><div className="metric-icon teal"><CalendarDays size={18}/></div><small>Upcoming deadlines</small><strong>{tasks.filter(t => t.status !== "done" && t.due_date).length}</strong><label>Keep your momentum</label></div><div className="metric-card"><div className="metric-icon amber"><Trophy size={18}/></div><small>Opportunities</small><strong>{opportunities.length}</strong><label>Discover what is next</label></div></div>
         <div className="content-grid"><section className="surface-card"><div className="card-heading"><div><span className="eyebrow">YOUR PRIORITIES</span><h3>Upcoming tasks</h3></div><button className="text-action" onClick={() => setPage("planner")}>View planner <ArrowRight size={14}/></button></div><TaskList limit={5}/></section><section className="surface-card quick-card"><span className="eyebrow">QUICK ACCESS</span><h3>Make progress, one step at a time.</h3><div className="quick-links"><button onClick={() => setPage("planner")}><CalendarDays/>Plan your week<ArrowRight/></button><button onClick={() => setPage("tools")}><Timer/>Start a focus session<ArrowRight/></button><button onClick={() => setPage("opportunities")}><Compass/>Explore opportunities<ArrowRight/></button></div></section></div>
       </>}
+      {page === "social" && <><Header title="Social feed" subtitle="Share ideas, discover perspectives and connect with the UNBLINDED community."/><SocialHub supabase={supabase} session={session} profile={profile}/></>}
       {page === "question-bank" && <>
         <Header title="Question Bank" subtitle="SSC board questions, chapter-wise practice and explanations."/>
         <QuestionBank supabase={supabase} session={session} admin={admin}/>
