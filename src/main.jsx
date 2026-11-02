@@ -10,6 +10,7 @@ import { supabase, configured } from "./supabase";
 import WriteArticle from "./WriteArticle";
 import Messages from "./Messages";
 import QuestionBank from "./QuestionBank";
+import Platform from "./Platform";
 import "./style.css";
 
 const navItems = [
@@ -271,10 +272,13 @@ function StudentProfile({ session, profile, updateStudent }) {
 function Root() {
   const [authVisible,setAuthVisible]=useState(false);
   const [session,setSession]=useState(null);
+  const [profile,setProfile]=useState(null);
+  const [admin,setAdmin]=useState(false);
   useEffect(()=>{if(!configured)return;supabase.auth.getSession().then(({data})=>setSession(data.session));const {data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>subscription.unsubscribe();},[]);
+  useEffect(()=>{if(!session)return;supabase.from("profiles").select("*").eq("id",session.user.id).maybeSingle().then(({data})=>{setProfile(data);setAdmin(["admin","moderator"].includes(data?.role));});},[session]);
   if(!configured)return <App/>;
   if(!session)return <Landing onSignIn={()=>setAuthVisible(true)} authVisible={authVisible} setAuthVisible={setAuthVisible}/>;
-  return <App/>;
+  return <Platform supabase={supabase} session={session} profile={profile} admin={admin}/>;
 }
 function Landing({onSignIn,authVisible,setAuthVisible}) {
   const [signup,setSignup]=useState(false),[form,setForm]=useState({name:"",email:"",password:""}),[busy,setBusy]=useState(false),[message,setMessage]=useState("");
