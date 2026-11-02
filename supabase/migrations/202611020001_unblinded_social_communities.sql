@@ -4,7 +4,7 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.social_posts (
   id uuid primary key default gen_random_uuid(),
-  author_id uuid not null references auth.users(id) on delete cascade,
+  author_id uuid not null references public.profiles(id) on delete cascade,
   body text not null check (char_length(trim(body)) between 1 and 5000),
   visibility text not null default 'public' check (visibility in ('public','followers','private')),
   created_at timestamptz not null default now(),
@@ -94,6 +94,8 @@ drop policy if exists "Memberships visible to signed in users" on public.communi
 create policy "Memberships visible to signed in users" on public.community_members for select to authenticated using (true);
 drop policy if exists "Users join as members" on public.community_members;
 create policy "Users join as members" on public.community_members for insert to authenticated with check (user_id=auth.uid() and role in ('owner','member'));
+drop policy if exists "Users update own memberships" on public.community_members;
+create policy "Users update own memberships" on public.community_members for update to authenticated using (user_id=auth.uid()) with check (user_id=auth.uid() and role='member');
 drop policy if exists "Users leave own memberships" on public.community_members;
 create policy "Users leave own memberships" on public.community_members for delete to authenticated using (user_id=auth.uid());
 
@@ -101,4 +103,4 @@ grant select,insert,update,delete on public.social_posts to authenticated;
 grant select,insert,delete on public.social_post_reactions to authenticated;
 grant select,insert,delete on public.social_post_comments to authenticated;
 grant select,insert,update,delete on public.community_spaces to authenticated;
-grant select,insert,delete on public.community_members to authenticated;
+grant select,insert,update,delete on public.community_members to authenticated;
